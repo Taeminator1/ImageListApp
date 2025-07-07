@@ -18,7 +18,11 @@ let project = Project(
             ),
             sources: ["ImageListApp/Sources/**"],
             resources: ["ImageListApp/Resources/**"],
-            dependencies: []
+            dependencies: [
+                .project(target: "ImageListData", path: .relativeToRoot("Frameworks/ImageList/ImageListData"), status: .required),
+                .project(target: "ImageListDomain", path: .relativeToRoot("Frameworks/ImageList/ImageListDomain"), status: .required),
+                .project(target: "ImageListPresentation", path: .relativeToRoot("Frameworks/ImageList/ImageListPresentation"), status: .required),
+            ]
         ),
         .target(
             name: "ImageListAppTests",
