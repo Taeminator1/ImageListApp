@@ -10,6 +10,8 @@ let project = Project(
             bundleId: "dev.tuist.ImageListPresentation",
             sources: ["Sources/**"],
             dependencies: [
+                .external(name: "Kingfisher"),
+                
                 .project(target: "ImageListDomain", path: "../ImageListDomain", status: .required),
             ]
         )
