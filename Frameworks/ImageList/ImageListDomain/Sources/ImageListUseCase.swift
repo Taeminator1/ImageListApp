@@ -42,5 +42,13 @@ public final actor ImageListUseCase {
         cachedImages.append(displayedImages.remove(at: index))
         return displayedImages
     }
+    
+    public func updateDisplayedImages(with images: [ImageEntity]) throws {
+        guard Set(images) == Set(displayedImages) else {
+            throw ImageListError.unknown
+        }
+        
+        displayedImages = images
+    }
 }
 

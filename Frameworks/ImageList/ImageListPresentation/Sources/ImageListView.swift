@@ -37,6 +37,11 @@ public struct ImageListView: View {
                         try await viewModel.removeImage(atOffsets: offsets)
                     }
                 }
+                .onMove { source, destination in
+                    Task {
+                        try await viewModel.moveImage(fromOffsets: source, toOffset: destination)
+                    }
+                }
             }
             .navigationTitle("Taemin's Image List")
             .toolbar {

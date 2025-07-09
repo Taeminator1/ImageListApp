@@ -29,4 +29,9 @@ final class ImageListViewModel: ObservableObject {
     func removeImage(atOffsets offsets: IndexSet) async throws {
         images = try await useCase.updatedImages(atOffsets: offsets)
     }
+    
+    func moveImage(fromOffsets source: IndexSet, toOffset destination: Int) async throws {
+        images.move(fromOffsets: source, toOffset: destination)
+        try await useCase.updateDisplayedImages(with: images)
+    }
 }
