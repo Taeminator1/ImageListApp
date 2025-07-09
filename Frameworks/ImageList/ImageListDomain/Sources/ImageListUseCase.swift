@@ -9,7 +9,8 @@ import Foundation
 
 public final actor ImageListUseCase {
     
-    private var images: Set<ImageEntity> = []
+    private var cachedImages: [ImageEntity] = []
+    private var displayedImages: [ImageEntity] = []
     private let repository: ImageListRepository
     
     public init(repository: ImageListRepository) {
@@ -17,17 +18,29 @@ public final actor ImageListUseCase {
     }
     
     public func fetch() async throws {
-        images = Set(try await repository.fetchedImages())
+        cachedImages = try await repository.fetchedImages()
     }
     
-    public func popRandomImage() -> ImageEntity? {
-        guard let randomImage = images.randomElement() else { return nil }
-        images.remove(randomImage)
-        return randomImage
+    public func addedRandomImage() throws -> [ImageEntity] {
+        guard let randomImage = cachedImages.randomElement(),
+              let randomImageIndex = cachedImages.firstIndex(of: randomImage) else {
+            throw ImageListError.emptySource
+        }
+        
+        cachedImages.remove(at: randomImageIndex)
+        displayedImages.append(randomImage)
+        
+        return displayedImages
     }
     
-    public func updateImages(with image: ImageEntity) {
-        images.update(with: image)
+    public func updatedImages(atOffsets offsets: IndexSet) throws -> [ImageEntity] {
+        guard let index = offsets.first,
+              displayedImages.indices ~= index else {
+            throw ImageListError.outOfIndex
+        }
+        
+        cachedImages.append(displayedImages.remove(at: index))
+        return displayedImages
     }
 }
 

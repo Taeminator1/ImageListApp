@@ -6,6 +6,8 @@
 //
 
 import Testing
+import Foundation
+
 @testable import ImageListDomain
 
 
@@ -23,38 +25,61 @@ struct UseCaseTests {
         sut = ImageListUseCase(repository: MockImageListRepository(images: mockImages))
         try await sut.fetch()
     }
-        
+    
     @Test(
-        "Check the number of images when poping images",
-        arguments: [0, 2]
+        "Check image count when adding images and error on overflow"
     )
-    func imageCount(numberOfImagesToAdd: UInt) async throws {
-        
-        for i in 0..<numberOfImagesToAdd {
-            await sut.updateImages(
-                with: ImageEntity(id: "\(i)", url: "https://a.com", author: "duck")
-            )
+    func imageCount() async throws {
+        var displayedImages: [ImageEntity] = []
+
+        for i in 0..<mockImages.count {
+            displayedImages = try await sut.addedRandomImage()
+            #expect(displayedImages.count == i+1)
         }
 
-        var imageCount = 0
-        while await sut.popRandomImage() != nil {
-            imageCount += 1
-        }
-        
-        #expect(imageCount == numberOfImagesToAdd + UInt(mockImages.count))
+        await #expect(
+            throws: ImageListError.emptySource,
+            performing: {
+                _ = try await sut.addedRandomImage()
+            }
+        )
     }
     
     @Test("Validate set of images")
     func randomImages() async throws {
         
-        var addedImages: Set<ImageEntity> = []
-        while let image = await sut.popRandomImage() {
-            addedImages.update(with: image)
+        var displayedImages: [ImageEntity] = []
+        for _ in 0 ..< mockImages.count {
+            displayedImages = try await sut.addedRandomImage()
         }
         
-        #expect(Set(mockImages) == addedImages)
+        #expect(Set(mockImages) == Set(displayedImages))
     }
-
+    
+    @Test(
+        "Remove all displayed images and error on out of index"
+    )
+    func updatedImages() async throws {
+        
+        var displayedImages: [ImageEntity] = []
+        
+        for _ in 0..<mockImages.count {
+            displayedImages = try await sut.addedRandomImage()
+        }
+        #expect(Set(displayedImages) == Set(mockImages))
+        
+        for _ in 0..<displayedImages.count {
+            displayedImages = try await sut.updatedImages(atOffsets: IndexSet(integer: 0))
+        }
+        #expect(displayedImages.isEmpty)
+        
+        await #expect(
+            throws: ImageListError.outOfIndex,
+            performing: {
+                _ = try await sut.updatedImages(atOffsets: IndexSet(integer: 0))
+            }
+        )
+    }
 }
 
 private struct MockImageListRepository: ImageListRepository {

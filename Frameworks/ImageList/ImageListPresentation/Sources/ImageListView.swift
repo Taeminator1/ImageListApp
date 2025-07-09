@@ -34,7 +34,7 @@ public struct ImageListView: View {
                 }
                 .onDelete { offsets in
                     Task {
-                        try await viewModel.remove(atOffsets: offsets)
+                        try await viewModel.removeImage(atOffsets: offsets)
                     }
                 }
             }
@@ -56,7 +56,7 @@ public struct ImageListView: View {
             do {
                 try await viewModel.fetch()
             } catch {
-                // TODO: handle error
+                // TODO: Handle error
                 print(error)
             }
         }

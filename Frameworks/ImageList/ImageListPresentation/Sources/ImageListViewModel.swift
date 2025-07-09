@@ -23,17 +23,10 @@ final class ImageListViewModel: ObservableObject {
     }
     
     func add() async throws {
-        await useCase.popRandomImage().map {
-            images.append($0)
-        }
+        images = try await useCase.addedRandomImage()
     }
     
-    func remove(atOffsets offsets: IndexSet) async throws {
-        guard let index = offsets.first,
-              images.indices ~= index else { return }
-        
-        let imageToUpdate = images[index]
-        images.remove(atOffsets: offsets)
-        await useCase.updateImages(with: imageToUpdate)
+    func removeImage(atOffsets offsets: IndexSet) async throws {
+        images = try await useCase.updatedImages(atOffsets: offsets)
     }
 }
