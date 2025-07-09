@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct ImageEntity: Identifiable {
+public struct ImageEntity: Identifiable, Hashable {
     
     public let id: String
-    public let imageURL: String
+    public let url: String
     public let author: String
     
-    public init(id: String, imageURL: String, author: String) {
+    public init(id: String, url: String, author: String) {
         self.id = id
-        self.imageURL = imageURL
+        self.url = url
         self.author = author
     }
 }

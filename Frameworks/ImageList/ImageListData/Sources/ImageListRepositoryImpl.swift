@@ -12,7 +12,7 @@ public struct ImageListRepositoryImpl: ImageListRepository {
     
     public init() { }
     
-    public func fetchImages() async throws -> [ImageListDomain.ImageEntity] {
+    public func fetchedImages() async throws -> [ImageEntity] {
         guard let url = URL(string: "https://picsum.photos/v2/list") else {
             throw NetworkError.unknown
         }

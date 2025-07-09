@@ -6,6 +6,6 @@
 //
 
 public protocol ImageListRepository {
-    func fetchImages() async throws -> [ImageEntity]
+    func fetchedImages() async throws -> [ImageEntity]
 }
 

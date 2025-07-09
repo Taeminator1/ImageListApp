@@ -1,0 +1,36 @@
+{
+  "configurations" : [
+    {
+      "id" : "78BFEE3A-900F-4613-BC7E-F8676ECE163F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ImageListApp.xcodeproj",
+      "identifier" : "7623F78327CEDB916DD1AECA",
+      "name" : "ImageListApp"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:ImageListApp.xcodeproj",
+        "identifier" : "88BFB9BC726359B325537889",
+        "name" : "ImageListAppTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Frameworks\/ImageList\/ImageListDomain\/ImageListDomain.xcodeproj",
+        "identifier" : "253BF713FE3916ADE6D77AC5",
+        "name" : "ImageListDomainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

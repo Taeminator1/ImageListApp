@@ -11,6 +11,15 @@ let project = Project(
             sources: ["Sources/**"],
             dependencies: [
             ]
-        )
+        ),
+        .target(
+            name: "ImageListDomainTests",
+            destinations: .iOS,
+            product: .unitTests,
+            bundleId: "dev.tuist.ImageListDomainTests",
+            sources: ["Tests/**"],
+            dependencies: [
+            ]
+        ),
     ]
 )

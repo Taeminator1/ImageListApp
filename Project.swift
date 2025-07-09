@@ -33,6 +33,17 @@ let project = Project(
             sources: ["ImageListApp/Tests/**"],
             resources: [],
             dependencies: [.target(name: "ImageListApp")]
-        ),
+        )
+    ],
+    schemes: [
+        .scheme(
+            name: "ImageListApp",
+            buildAction: .buildAction(
+                targets: [.init(stringLiteral: "ImageListApp")]
+            ),
+            testAction: .testPlans(
+                [.relativeToRoot("ImageListAppTests/ImageListApp.xctestplan")]
+            )
+        )
     ]
 )
