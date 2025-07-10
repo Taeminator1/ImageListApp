@@ -16,6 +16,7 @@ public struct ImageListView: View {
     
     @ObservedObject private var viewModel: ImageListViewModel
     @State private var errorDTO: ErrorDTO?
+    @State private var isProcessing = false
     
     public init(repository: ImageListRepository) {
         self.viewModel = ImageListViewModel(
@@ -79,9 +80,24 @@ public struct ImageListView: View {
                     return Alert(title: title, message: message, dismissButton: dissmissButton)
                 }
             }
+            .overlay(
+                ImageSyncButton(
+                    isProcessing: $isProcessing,
+                    cachedImagesLoaded: viewModel.cachedImagesLoaded,
+                    onSync: {
+                        if viewModel.cachedImagesLoaded {
+                            await viewModel.reset()
+                        } else {
+                            await handleAppError(needRetry: true, viewModel.fetch)
+                        }
+                    }
+                )
+            )
         }
         .task {
+            await MainActor.run { isProcessing = true }
             await handleAppError(needRetry: true, viewModel.fetch)
+            await MainActor.run { isProcessing = false }
         }
     }
 }

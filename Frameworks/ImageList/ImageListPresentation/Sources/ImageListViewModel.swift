@@ -11,6 +11,7 @@ import ImageListDomain
 @MainActor
 final class ImageListViewModel: ObservableObject {
     @Published private(set) var images: [ImageEntity] = []
+    @Published private(set) var cachedImagesLoaded: Bool = false
     
     private let useCase: ImageListUseCase
     
@@ -19,7 +20,13 @@ final class ImageListViewModel: ObservableObject {
     }
     
     func fetch() async throws {
-        try await useCase.fetch()
+        do {
+            try await useCase.fetch()
+            cachedImagesLoaded = true
+        } catch let error {
+            cachedImagesLoaded = false
+            throw error
+        }
     }
     
     func add() async throws {
@@ -33,5 +40,10 @@ final class ImageListViewModel: ObservableObject {
     func moveImage(fromOffsets source: IndexSet, toOffset destination: Int) async throws {
         images.move(fromOffsets: source, toOffset: destination)
         try await useCase.updateDisplayedImages(with: images)
+    }
+    
+    func reset() async {
+        images = await useCase.reset()
+        cachedImagesLoaded = false
     }
 }

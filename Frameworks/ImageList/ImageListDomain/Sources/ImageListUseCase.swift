@@ -20,7 +20,12 @@ public final actor ImageListUseCase {
     }
     
     public func fetch() async throws {
-        cachedImages = try await repository.fetchedImages()
+        do {
+            cachedImages = try await repository.fetchedImages()
+        } catch let error {
+            reset()
+            throw error
+        }
     }
     
     public func addedRandomImage() throws -> [ImageEntity] {
@@ -51,6 +56,13 @@ public final actor ImageListUseCase {
         }
         
         displayedImages = images
+    }
+    
+    @discardableResult
+    public func reset() -> [ImageEntity] {
+        cachedImages = []
+        displayedImages = []
+        return displayedImages
     }
 }
 
