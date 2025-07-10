@@ -10,6 +10,7 @@ let project = Project(
             bundleId: "dev.tuist.ImageListDomain",
             sources: ["Sources/**"],
             dependencies: [
+                .project(target: "AppError", path: .relativeToRoot("Frameworks/AppError"), status: .required),
             ]
         ),
         .target(
@@ -19,6 +20,7 @@ let project = Project(
             bundleId: "dev.tuist.ImageListDomainTests",
             sources: ["Tests/**"],
             dependencies: [
+                .project(target: "AppError", path: .relativeToRoot("Frameworks/AppError"), status: .required),
             ]
         ),
     ]

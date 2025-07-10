@@ -6,6 +6,8 @@
 //
 
 import Foundation
+
+import AppError
 import ImageListDomain
 
 public struct ImageListRepositoryImpl: ImageListRepository {
@@ -14,17 +16,17 @@ public struct ImageListRepositoryImpl: ImageListRepository {
     
     public func fetchedImages() async throws -> [ImageEntity] {
         guard let url = URL(string: "https://picsum.photos/v2/list") else {
-            throw NetworkError.unknown
+            throw NetworkError.invalidURL
         }
         
         do {
             let data = try await URLSession.shared.data(from: url).0
             guard let response = try? JSONDecoder().decode(Array<ImageResponse>.self, from: data) else {
-                throw NetworkError.unknown
+                throw NetworkError.decodingFailed
             }
             return response.map { $0.entity }
         } catch {
-            throw NetworkError.unknown
+            throw NetworkError.requestFailed
         }
     }
 }

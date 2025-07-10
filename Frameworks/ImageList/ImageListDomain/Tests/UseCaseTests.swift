@@ -9,6 +9,7 @@ import Testing
 import Foundation
 
 @testable import ImageListDomain
+@testable import AppError
 
 
 struct UseCaseTests {

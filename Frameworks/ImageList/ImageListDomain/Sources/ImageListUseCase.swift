@@ -7,6 +7,8 @@
 
 import Foundation
 
+import AppError
+
 public final actor ImageListUseCase {
     
     private var cachedImages: [ImageEntity] = []
