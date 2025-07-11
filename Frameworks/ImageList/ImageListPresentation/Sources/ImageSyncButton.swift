@@ -12,6 +12,7 @@ struct ImageSyncButton: View {
     @Binding private var isProcessing: Bool
     private let cachedImagesLoaded: Bool
     private let onSync: () async -> Void
+    @State private var showAlert = false
     
     init(
         isProcessing: Binding<Bool>,
@@ -29,15 +30,9 @@ struct ImageSyncButton: View {
             HStack {
                 Spacer()
                 Button(action: {
-                    Task {
-                        guard !isProcessing else { return }
-                        await MainActor.run { isProcessing = true }
-                        await onSync()
-                        await MainActor.run { isProcessing = false }
-                    }
+                    showAlert = true
                 }) {
-                    let imageName = cachedImagesLoaded ? "trash.circle.fill" : "arrow.down.circle"
-                    Image(systemName: imageName)
+                    Image(systemName: buttonImageName)
                         .font(.system(size: 48))
                         .foregroundStyle(isProcessing ? .gray : .blue)
                         .padding()
@@ -45,8 +40,40 @@ struct ImageSyncButton: View {
                 .disabled(isProcessing)
                 .buttonStyle(NoAnimationButtonStyle())
                 .padding(.bottom, -24)
+                .alert(
+                    Text(alertTitle),
+                    isPresented: $showAlert,
+                    actions: {
+                        Button("Cancel", role: .cancel) { }
+                        Button("Confirm") {
+                            Task {
+                                guard !isProcessing else { return }
+                                await MainActor.run { isProcessing = true }
+                                await onSync()
+                                await MainActor.run { isProcessing = false }
+                            }
+                        }
+                    },
+                    message: { Text(alertMessage) }
+                )
             }
         }
+    }
+}
+
+private extension ImageSyncButton {
+    var buttonImageName: String {
+        cachedImagesLoaded ? "trash.circle.fill" : "arrow.down.circle"
+    }
+    
+    var alertTitle: String {
+        cachedImagesLoaded ? "Clear Saved Images" : "Fetch & Save"
+    }
+    
+    var alertMessage: String {
+        cachedImagesLoaded ?
+        "Do you want to reset the screen and delete the saved images?" :
+        "Do you want to fetch photos from the server and save them?"
     }
 }
 
