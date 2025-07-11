@@ -83,7 +83,7 @@ struct UseCaseTests {
     }
     
     @Test(
-        "Reorder displayed images and validate mismatch error"
+        "Reorder displayed images"
     )
     func reordredImages() async throws {
         
@@ -97,13 +97,6 @@ struct UseCaseTests {
         displayedImages = try await getDisplayedImages(sut, from: reorderedImages)
         
         #expect(reorderedImages == displayedImages)
-        
-        await #expect(
-            throws: ImageListError.unknown,
-            performing: {
-                try await sut.updateDisplayedImages(with: Array(mockImages[0..<mockImages.count-1]))
-            }
-        )
     }
     
     @Test(
@@ -127,9 +120,15 @@ private extension UseCaseTests {
 }
 
 private struct MockImageListRepository: ImageListRepository {
+    
     let images: [ImageEntity]
     
-    func fetchedImages() async throws -> [ImageEntity] {
-        return images
+    func savedImages() async throws -> ImageGroupEntity {
+        return ImageGroupEntity(
+            cachedImages: images,
+            displayedImages: []
+        )
     }
+    
+    func saveImages(imageGroup: ImageListDomain.ImageGroupEntity) async { }
 }

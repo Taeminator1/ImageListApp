@@ -21,7 +21,7 @@ final class ImageListViewModel: ObservableObject {
     
     func fetch() async throws {
         do {
-            try await useCase.fetch()
+            images = try await useCase.fetch()
             cachedImagesLoaded = true
         } catch let error {
             cachedImagesLoaded = false

@@ -147,13 +147,18 @@ private extension ImageListView {
 // MARK: - Preview
 #Preview {
     struct MockImageListRepository: ImageListRepository {
-        func fetchedImages() async throws -> [ImageEntity] {
-            [
-                ImageEntity(id: "123", url: "https://x.com", author: "apple"),
-                ImageEntity(id: "456", url: "https://y.com", author: "book"),
-                ImageEntity(id: "789", url: "https://z.com", author: "cat")
-            ]
+        func savedImages() async throws -> ImageGroupEntity {
+            ImageGroupEntity(
+                cachedImages: [],
+                displayedImages: [
+                    ImageEntity(id: "123", url: "https://x.com", author: "apple"),
+                    ImageEntity(id: "456", url: "https://y.com", author: "book"),
+                    ImageEntity(id: "789", url: "https://z.com", author: "cat")
+                ]
+            )
         }
+        
+        func saveImages(imageGroup: ImageListDomain.ImageGroupEntity) async { }
     }
     
     return ImageListView(repository: MockImageListRepository())

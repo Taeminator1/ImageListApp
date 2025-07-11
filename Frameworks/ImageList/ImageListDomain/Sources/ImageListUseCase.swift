@@ -19,9 +19,12 @@ public final actor ImageListUseCase {
         self.repository = repository
     }
     
-    public func fetch() async throws {
+    public func fetch() async throws -> [ImageEntity] {
         do {
-            cachedImages = try await repository.fetchedImages()
+            let imageGroupEntity = try await repository.savedImages()
+            cachedImages = imageGroupEntity.cachedImageEntities
+            displayedImages = imageGroupEntity.displayedImageEntities
+            return displayedImages
         } catch let error {
             reset()
             throw error
@@ -36,6 +39,7 @@ public final actor ImageListUseCase {
         
         cachedImages.remove(at: randomImageIndex)
         displayedImages.append(randomImage)
+        saveImages()
         
         return displayedImages
     }
@@ -47,6 +51,8 @@ public final actor ImageListUseCase {
         }
         
         cachedImages.append(displayedImages.remove(at: index))
+        saveImages()
+        
         return displayedImages
     }
     
@@ -56,13 +62,27 @@ public final actor ImageListUseCase {
         }
         
         displayedImages = images
+        saveImages()
     }
     
     @discardableResult
     public func reset() -> [ImageEntity] {
         cachedImages = []
         displayedImages = []
+        saveImages()
         return displayedImages
     }
 }
 
+private extension ImageListUseCase {
+    func saveImages() {
+        Task { @MainActor in
+            await repository.saveImages(
+                imageGroup: ImageGroupEntity(
+                    cachedImages: cachedImages,
+                    displayedImages: displayedImages
+                )
+            )
+        }
+    }
+}

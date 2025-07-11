@@ -10,6 +10,8 @@ let project = Project(
             bundleId: "dev.tuist.ImageListData",
             sources: ["Sources/**"],
             dependencies: [
+                .external(name: "RealmSwift"),
+                .external(name: "Realm"),
                 .project(target: "AppError", path: .relativeToRoot("Frameworks/AppError"), status: .required),
                 .project(target: "ImageListDomain", path: .relativeToRoot("Frameworks/ImageList/ImageListDomain"), status: .required),
             ]

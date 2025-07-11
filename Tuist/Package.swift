@@ -15,6 +15,7 @@ import PackageDescription
 let package = Package(
     name: "ImageListApp",
     dependencies: [
-        .package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.12.0"))
+        .package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.12.0")),
+        .package(url: "https://github.com/realm/realm-swift", .upToNextMajor(from: "10.43.0")),
     ]
 )
