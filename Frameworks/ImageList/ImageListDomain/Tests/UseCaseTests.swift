@@ -81,6 +81,49 @@ struct UseCaseTests {
             }
         )
     }
+    
+    @Test(
+        "Reorder displayed images and validate mismatch error"
+    )
+    func reordredImages() async throws {
+        
+        var displayedImages: [ImageEntity] = []
+        for _ in 0..<mockImages.count {
+            displayedImages = try await sut.addedRandomImage()
+        }
+        
+        let reorderedImages = displayedImages.shuffled()
+        try await sut.updateDisplayedImages(with: reorderedImages)
+        displayedImages = try await getDisplayedImages(sut, from: reorderedImages)
+        
+        #expect(reorderedImages == displayedImages)
+        
+        await #expect(
+            throws: ImageListError.unknown,
+            performing: {
+                try await sut.updateDisplayedImages(with: Array(mockImages[0..<mockImages.count-1]))
+            }
+        )
+    }
+    
+    @Test(
+        "Reset images"
+    )
+    func restoredImages() async {
+        let displayedImages = await sut.reset()
+        #expect(displayedImages.isEmpty)
+    }
+}
+
+private extension UseCaseTests {
+    func getDisplayedImages(_ sut: ImageListUseCase, from images: [ImageEntity]) async throws -> [ImageEntity] {
+        guard let lastImage = images.last else { return [] }
+        
+        var displayedImages = try await sut.updatedImages(atOffsets: IndexSet(integer: images.count-1))
+        displayedImages.append(lastImage)
+
+        return displayedImages
+    }
 }
 
 private struct MockImageListRepository: ImageListRepository {
