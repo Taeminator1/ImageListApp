@@ -51,35 +51,10 @@ public struct ImageListView: View {
             }
             .navigationTitle("Taemin's Image List")
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    EditButton()
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        handleAppError(viewModel.add)
-                    }) {
-                        Text("Add Image")
-                    }
-                }
+                ToolbarItem(placement: .topBarLeading) { EditButton() }
+                ToolbarItem(placement: .topBarTrailing) { addImageButton() }
             }
-            .alert(item: $errorDTO) { error in
-                let title = Text("Error")
-                let message = Text(error.message)
-                let dissmissButton = Alert.Button.default(Text("OK"))
-                
-                if let retryAction = error.retryAction {
-                    return Alert(
-                        title: title,
-                        message: message,
-                        primaryButton: dissmissButton,
-                        secondaryButton: .default(Text("Retry")) {
-                            handleAppError(needRetry: true, retryAction)
-                        }
-                    )
-                } else {
-                    return Alert(title: title, message: message, dismissButton: dissmissButton)
-                }
-            }
+            .alert(item: $errorDTO) { alert(with: $0) }
             .overlay(
                 ImageSyncButton(
                     isProcessing: $isProcessing,
@@ -102,8 +77,40 @@ public struct ImageListView: View {
     }
 }
 
+// MARK: - UI Helper
+private extension ImageListView {
+    
+    func addImageButton() -> some View {
+        Button(action: {
+            handleAppError(viewModel.add)
+        }) {
+            Text("Add Image")
+        }
+    }
+    
+    func alert(with error: ErrorDTO) -> Alert {
+        let title = Text("Error")
+        let message = Text(error.message)
+        let dissmissButton = Alert.Button.default(Text("OK"))
+        
+        if let retryAction = error.retryAction {
+            return Alert(
+                title: title,
+                message: message,
+                primaryButton: dissmissButton,
+                secondaryButton: .default(Text("Retry")) {
+                    handleAppError(needRetry: true, retryAction)
+                }
+            )
+        } else {
+            return Alert(title: title, message: message, dismissButton: dissmissButton)
+        }
+    }
+}
+
 // MARK: - Error Helper
 private extension ImageListView {
+    
     struct ErrorDTO: Identifiable {
         var id = UUID()
         var message: String
